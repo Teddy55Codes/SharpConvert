@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="FileConverter/FileConverter.csproj" />
   <Project Path="SharpConvert/SharpConvert.csproj" />
 </Solution>
