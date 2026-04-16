@@ -20,6 +20,6 @@ public static class FileConverter
             return Result.Fail($"File format {cf.Name} can not be converted to {targetFormat}.");
         }
         
-        return cf.Convert(originalFile, targetFormat);;
+        return cf.Convert(originalFile, targetFormat);
     }
 }
