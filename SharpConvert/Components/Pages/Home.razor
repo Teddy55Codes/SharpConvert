@@ -5,42 +5,49 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div>
+    <h1>Hello, this is a FileConverter using WebAssembly!</h1>
+    This frontend is rendered using WebAssembly. The actual file-conversion happens server-side due to compatibility
+    issues.
+</div>
+<br/>
+<div>
+    <span>Upload a file convert it!</span>
+    <InputFile OnChange="LoadFile"/>
+</div>
 
-Welcome to your new app.
 
-
-<InputFile OnChange="LoadFile" />
 
 <script>
-  window.downloadFileFromStream = async (fileName, contentStreamReference) => {
-    const arrayBuffer = await contentStreamReference.arrayBuffer();
-    const blob = new Blob([arrayBuffer]);
-    const url = URL.createObjectURL(blob);
-    const anchorElement = document.createElement('a');
-    anchorElement.href = url;
-    anchorElement.download = fileName ?? '';
-    anchorElement.click();
-    anchorElement.remove();
-    URL.revokeObjectURL(url);
-  }
+    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+        const arrayBuffer = await contentStreamReference.arrayBuffer();
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+        const anchorElement = document.createElement('a');
+        anchorElement.href = url;
+        anchorElement.download = fileName ?? '';
+        anchorElement.click();
+        anchorElement.remove();
+        URL.revokeObjectURL(url);
+    }
 </script>
 
 
 @code {
+
     private async Task LoadFile(InputFileChangeEventArgs e)
     {
         using var filestream = new MemoryStream();
         await e.File.OpenReadStream().CopyToAsync(filestream);
         var resultFileStream = FileConverter.ConvertFile(filestream, "PNG", "JPEG");
         if (resultFileStream.IsFailed) return;
-        
+
         var fileName = "result.jpeg";
         using var streamRef = new DotNetStreamReference(stream: resultFileStream.Value);
 
         await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
-    
+
     public static byte[] ReadFully(Stream input)
     {
         using (MemoryStream ms = new MemoryStream())
@@ -49,4 +56,5 @@ Welcome to your new app.
             return ms.ToArray();
         }
     }
+
 }
